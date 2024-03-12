@@ -28,6 +28,8 @@ import { CustomField } from "./CustomField"
 import { useState, useTransition } from "react"
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils"
 import { updateCredits } from "@/lib/actions/user.actions"
+import MedieUploader from "./MedieUploader"
+import TransformedImage from "./TransformedImage"
 
 export const formSchema = z.object({
     title: z.string(),
@@ -97,7 +99,7 @@ const TransformationForm = ({ action, data = null, type, userId, creditBalance, 
         }, 1000)
     }
 
-    // TODO: Return updateCredits
+    // TODO: Update creditFee to something else
     const onTransformHandler = async () => {
         setIsTransforming(true)
 
@@ -108,7 +110,7 @@ const TransformationForm = ({ action, data = null, type, userId, creditBalance, 
         setNewTransformation(null)
 
         startTransition(async () => {
-            // await updateCredits(userId, creditFee)
+            await updateCredits(userId, -1)
         })
     }
 
@@ -195,20 +197,46 @@ const TransformationForm = ({ action, data = null, type, userId, creditBalance, 
                     </div>
                 )}
 
-                <div className="flex flex-col gap-4">
+                <div className="media-uploader-field">
+                    <CustomField
+                        control={form.control}
+                        name="publicId"
+                        className="flex size-full flex-col"
+                        render={({ field }) => (
+                            <MedieUploader
+                                onValueChange={field.onChange}
+                                setImage={setImage}
+                                publicId={field.value}
+                                image={image}
+                                type={type}
+                            />
+                        )}
+                    />
 
+                    <TransformedImage
+                        image={image}
+                        type={type}
+                        title={form.getValues().title}
+                        isTransforming={isTransforming}
+                        setIsTransforming={setIsTransforming}
+                        transformationConfig={transformationConfig}
+                    />
+
+                </div>
+
+                <div className="flex flex-col gap-4">
                     <Button
                         type="button"
-                        className="submit-button capitalize hover:opacity-90"
-                        disabled={isSubmitting}
+                        className="submit-button capitalize"
+                        disabled={isTransforming || newTransformation === null}
+                        onClick={onTransformHandler}
                     >
                         {isTransforming ? 'Transforming...' : 'Apply Transformation'}
                     </Button>
                     <Button
                         type="submit"
-                        className="submit-button capitalize hover:opacity-90"
-                        disabled={isTransforming || newTransformation === null}
-                        onClick={onTransformHandler}
+                        className="submit-button capitalize"
+                        disabled={isSubmitting}
                     >
                         {isSubmitting ? 'Submitting...' : 'Save Image'}
                     </Button>
