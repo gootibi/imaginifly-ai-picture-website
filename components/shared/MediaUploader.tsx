@@ -14,7 +14,7 @@ type MediaUploaderProps = {
     type: string;
 }
 
-const MedieUploader = ({
+const MediaUploader = ({
     onValueChange,
     setImage,
     publicId,
@@ -31,7 +31,7 @@ const MedieUploader = ({
             publicId: result?.info?.public_id,
             width: result?.info?.width,
             height: result?.info?.height,
-            secureUrl: result?.info?.secure_url
+            secureURL: result?.info?.secure_url
         }))
 
         onValueChange(result?.info?.public_id)
@@ -100,4 +100,4 @@ const MedieUploader = ({
     )
 }
 
-export default MedieUploader
+export default MediaUploader
